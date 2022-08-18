@@ -1,0 +1,121 @@
+--- a/net/minecraft/src/EntityClientPlayerMP.java
++++ b/net/minecraft/src/EntityClientPlayerMP.java
+@@ -15,10 +15,13 @@
+ 	private boolean field_9382_bF = false;
+ 	private boolean field_9381_bG = false;
+ 	private int field_12242_bI = 0;
++	public PlayerHelper ph;
++	protected Minecraft mc;
+ 
+ 	public EntityClientPlayerMP(Minecraft minecraft1, World world2, Session session3, NetClientHandler netClientHandler4) {
+ 		super(minecraft1, world2, session3, 0);
+ 		this.field_797_bg = netClientHandler4;
++		this.ph = new PlayerHelper(this.mc, this);
+ 	}
+ 
+ 	public boolean canAttackEntity(Entity entity1, int i2) {
+@@ -27,13 +30,78 @@
+ 
+ 	public void heal(int i1) {
+ 	}
++	
++	public void writeEntityToNBT(NBTTagCompound nbttagcompound) {
++		super.writeEntityToNBT(nbttagcompound);
++		nbttagcompound.setInteger("Score", this.score);
++		this.ph.writeWaypointsToNBT(this.mc.theWorld.field_9432_t);
++	}
++
++	public void readEntityFromNBT(NBTTagCompound nbttagcompound) {
++		super.readEntityFromNBT(nbttagcompound);
++		this.score = nbttagcompound.getInteger("Score");
++		this.ph.readWaypointsFromNBT(this.mc.theWorld.field_9432_t);
++	}
++	
++	public float getCurrentPlayerStrVsBlock(Block block) {
++		return this.ph.instant ? Float.MAX_VALUE : super.getCurrentPlayerStrVsBlock(block);
++	}
++
++	public boolean canHarvestBlock(Block block) {
++		return this.ph.instant ? true : super.canHarvestBlock(block);
++	}
++	
++	protected void fall(float f) {
++		if(this.ph.falldamage) {
++			super.fall(f);
++		}
++	}
++
++	protected void func_424_C() {
++		if(this.ph.gravity > 1.0D) {
++			this.motionY = (double)0.42F * this.ph.gravity;
++		} else {
++			super.func_424_C();
++		}
++	}
++	
++	public void func_351_a(float f, float f1, float f2) {
++		if(this.ph.speed <= 1.0F) {
++			super.func_351_a(f, f1, f2);
++		} else {
++			float f3 = MathHelper.sqrt_float(f * f + f1 * f1);
++			if(f3 >= 0.01F) {
++				if(f3 < 1.0F) {
++					f3 = 1.0F;
++				}
++
++				f3 = f2 / f3;
++				f *= f3;
++				f1 *= f3;
++				float f4 = MathHelper.sin(this.rotationYaw * 3.141593F / 180.0F);
++				float f5 = MathHelper.cos(this.rotationYaw * 3.141593F / 180.0F);
++				this.motionX += (double)((f * f5 - f1 * f4) * this.ph.speed);
++				this.motionZ += (double)((f1 * f5 + f * f4) * this.ph.speed);
++			}
++		}
++	}
+ 
+ 	public void onUpdate() {
+ 		if(this.worldObj.blockExists(MathHelper.floor_double(this.posX), 64, MathHelper.floor_double(this.posZ))) {
++			this.ph.beforeUpdate();
+ 			super.onUpdate();
++			this.ph.afterUpdate();
+ 			this.func_4056_N();
+ 		}
+ 	}
++	
++
++
++	public void setEntityDead() {
++		this.ph.setCurrentPosition();
++		super.setEntityDead();
++	}
++
+ 
+ 	public void func_6420_o() {
+ 	}
+@@ -125,8 +193,12 @@
+ 		entityItem1.motionZ = (double)packet21PickupSpawn2.roll / 128.0D;
+ 	}
+ 
+-	public void sendChatMessage(String string1) {
+-		this.field_797_bg.addToSendQueue(new Packet3Chat(string1));
++	public void sendChatMessage(String chatMessage) {
++		if(chatMessage.startsWith(".")) {
++		this.ph.processCommand(chatMessage);
++		} else {
++			this.field_797_bg.addToSendQueue(new Packet3Chat(chatMessage));
++		}
+ 	}
+ 
+ 	public void func_457_w() {
+@@ -140,6 +212,9 @@
+ 	}
+ 
+ 	protected void damageEntity(int i1) {
+-		this.health -= i1;
++		if(this.ph.damage) {
++			super.damageEntity(i1);
++		}
+ 	}
+ }
++
