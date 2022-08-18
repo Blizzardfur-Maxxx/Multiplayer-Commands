@@ -1,4 +1,4 @@
-# Multiplayer-Commands
+# Multiplayer Commands
 a port of Minecraft single player commands mod to multiplayer client
 
 "/" is for server commands 
