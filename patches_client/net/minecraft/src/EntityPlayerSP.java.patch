@@ -1,0 +1,11 @@
+--- net/minecraft/src/EntityPlayerSP.java
++++ net/minecraft/src/EntityPlayerSP.java
+@@ -4,7 +4,7 @@
+ 
+ public class EntityPlayerSP extends EntityPlayer {
+ 	public MovementInput movementInput;
+-	private Minecraft mc;
++	public Minecraft mc;
+ 
+ 	public EntityPlayerSP(Minecraft var1, World var2, Session var3) {
+ 		super(var2);
