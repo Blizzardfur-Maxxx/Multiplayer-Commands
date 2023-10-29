@@ -5,7 +5,6 @@
  	private boolean field_9381_bG = false;
  	private int field_12242_bI = 0;
 +	public PlayerHelper ph;
-+	protected Minecraft mc;
  
  	public EntityClientPlayerMP(Minecraft minecraft1, World world2, Session session3, NetClientHandler netClientHandler4) {
  		super(minecraft1, world2, session3, 0);
@@ -14,7 +13,7 @@
  	}
  
  	public boolean canAttackEntity(Entity entity1, int i2) {
-@@ -27,13 +30,78 @@
+@@ -27,13 +29,78 @@
  
  	public void heal(int i1) {
  	}
@@ -93,7 +92,7 @@
  
  	public void func_6420_o() {
  	}
-@@ -125,8 +193,12 @@
+@@ -125,8 +192,12 @@
  		entityItem1.motionZ = (double)packet21PickupSpawn2.roll / 128.0D;
  	}
  
@@ -108,7 +107,7 @@
  	}
  
  	public void func_457_w() {
-@@ -140,6 +212,9 @@
+@@ -140,6 +211,9 @@
  	}
  
  	protected void damageEntity(int i1) {
