@@ -1859,12 +1859,11 @@
 +	}
 +
 +	public void sendMessage(String message) {
-+	}
-+
-+	public void sendMessage(String message, char colour) {
++		this.mc.ingameGUI.addChatMessage(message);
 +	}
 +
 +	public void sendError(String message) {
++		this.mc.ingameGUI.addChatMessage(message);
 +	}
 +
 +	public void printCurrentTime() {
